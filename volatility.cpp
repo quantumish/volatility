@@ -1,4 +1,8 @@
-template <typename T, std::function<double(double)> T::f, std::function<double(double)> T::f_prime>
+#include <functional>
+#include <iostream>
+#include <cmath>
+
+template <typename T>
 double newton_raphson(double initial, double threshold, const T& func)
 {
     double y = func.f(initial);
@@ -25,8 +29,15 @@ FuncPair::FuncPair(std::function<double(double)> function, std::function<double(
 FuncPair::FuncPair(std::function<double(double)> function, double eps)
     :f(function)
 {
-    f_prime = [f, eps](double x) -> double {
+    f_prime = [this, eps](double x) -> double {
         return (f(x+eps) - f(x))/eps;
     };
 }
 
+double quad (double x) {return pow(x,2)+(3*x)+2.25;}
+
+int main() {
+    FuncPair quadratic (quad, 0.001);
+    double x = newton_raphson<FuncPair>(0, 0.0001, quadratic);
+    std::cout << x << "\n";
+}
