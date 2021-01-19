@@ -1,5 +1,7 @@
 #include <functional>
 #include <iostream>
+#include <random>
+#include <cassert>
 #include <cmath>
 
 template <typename T>
@@ -10,6 +12,8 @@ double newton_raphson(double initial, double threshold, const T& func)
     while (fabs(y) > threshold) {       
         x = x - func.f(x)/func.f_prime(x);
         y = func.f(x);
+        std::cout << x << " " << y << '\n';
+        assert(2<1);
     }
     return x;
 }
@@ -34,10 +38,25 @@ FuncPair::FuncPair(std::function<double(double)> function, double eps)
     };
 }
 
-double quad (double x) {return pow(x,2)+(3*x)+2.25;}
+double black_scholes (double x)
+{
+    double C = 17.50;
+    double K = 25.00;
+    double r = 0.05;
+    double t = 3;
+    double S = 44.57;
+    double rho = 1;
+    auto N = [](double x) -> double {
+        return 1/(sqrt(2*M_PI)) * exp(-0.5 * pow(x, 2));
+    };
+    double d_1 = (log(S/K) + (r + pow(rho, 2)/2)*t)/(rho * sqrt(t));
+    double d_2 = d_1 - (rho * sqrt(t));
+    return S*N(d_1) - K*exp(-r*t)*N(d_2) - C;
+}
 
 int main() {
-    FuncPair quadratic (quad, 0.001);
-    double x = newton_raphson<FuncPair>(0, 0.0001, quadratic);
-    std::cout << x << "\n";
+    FuncPair option (black_scholes, 0.001);
+    std::cout << black_scholes(0) << "\n";
+    // double x = newton_raphson<FuncPair>(0, 0.01, option);
+    // std::cout << x << "\n";
 }
