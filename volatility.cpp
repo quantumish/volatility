@@ -40,23 +40,23 @@ FuncPair::FuncPair(std::function<double(double)> function, double eps)
 
 double black_scholes (double x)
 {
-    double C = 17.50;
-    double K = 25.00;
+    double C = 17.5;
+    double K = 25;
     double r = 0.05;
     double t = 3;
-    double S = 44.57;
-    double rho = 1;
+    double S = 44.47;
     auto N = [](double x) -> double {
-        return 1/(sqrt(2*M_PI)) * exp(-0.5 * pow(x, 2));
+        return x;//1/(sqrt(2*M_PI)) * exp(-0.5 * pow(x, 2));
     };
-    double d_1 = (log(S/K) + (r + pow(rho, 2)/2)*t)/(rho * sqrt(t));
-    double d_2 = d_1 - (rho * sqrt(t));
+    double d_1 = (log(S/K) + (r + pow(x, 2)/2)*t)/(x * sqrt(t));
+    double d_2 = d_1 - (x * sqrt(t));
+    std::cout << d_1 << " " << d_2 << " " << N(d_1) << " " << N(d_2) << " " << S*N(d_1) << " " << K*exp(-r*t)*N(d_2) << " " << S << " " << K*exp(-r*t) << "\n";
     return S*N(d_1) - K*exp(-r*t)*N(d_2) - C;
 }
 
-int main() {
+int main(int argc, char** argv) {
     FuncPair option (black_scholes, 0.001);
-    std::cout << black_scholes(0) << "\n";
+    std::cout << black_scholes(strtol(argv[1], NULL, 10)) << "\n";
     // double x = newton_raphson<FuncPair>(0, 0.01, option);
     // std::cout << x << "\n";
 }
