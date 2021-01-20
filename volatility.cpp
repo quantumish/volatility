@@ -38,25 +38,32 @@ FuncPair::FuncPair(std::function<double(double)> function, double eps)
     };
 }
 
+#define EPSILON 0.1
+#define LARGE_NUM 10000
 double black_scholes (double x)
 {
-    double C = 17.5;
-    double K = 25;
+    double C = 4.5;
+    double K = 50;
     double r = 0.05;
-    double t = 3;
-    double S = 44.47;
+    double t = 0.5;
+    double S = 52;
     auto N = [](double x) -> double {
-        return x;//1/(sqrt(2*M_PI)) * exp(-0.5 * pow(x, 2));
+        double sum = 0;
+        for (double i = -LARGE_NUM; i <= x; i+=EPSILON) {           
+            sum += (1/(sqrt(2*M_PI)) * exp(-0.5 * pow(i, 2))) * EPSILON;
+        }
+        return sum;
     };
-    double d_1 = (log(S/K) + (r + pow(x, 2)/2)*t)/(x * sqrt(t));
-    double d_2 = d_1 - (x * sqrt(t));
-    std::cout << d_1 << " " << d_2 << " " << N(d_1) << " " << N(d_2) << " " << S*N(d_1) << " " << K*exp(-r*t)*N(d_2) << " " << S << " " << K*exp(-r*t) << "\n";
-    return S*N(d_1) - K*exp(-r*t)*N(d_2) - C;
+    std::cout << x << "\n";
+    double d_1 = (log(S/K) +  (r + pow(x, 2)/2)*t)/sqrt(pow(x,2) * t);
+    double d_2 = (log(S/K) + (r - pow(x, 2)/2)*t)/sqrt(pow(x,2) * t);
+    std::cout << d_1 << " " << d_2 << " " << N(d_1) << " " << N(d_2) << " " << S*N(d_1) << " " << K*exp(-r*t)*N(d_2) << " " << S << " "  << K*exp(-r*t) << "\n";
+    return S*N(d_1) - K*exp(-r*t)*N(d_2);
 }
 
 int main(int argc, char** argv) {
     FuncPair option (black_scholes, 0.001);
-    std::cout << black_scholes(strtol(argv[1], NULL, 10)) << "\n";
-    // double x = newton_raphson<FuncPair>(0, 0.01, option);
-    // std::cout << x << "\n";
+    std::cout << black_scholes(strtod(argv[1], NULL)) << "\n";
+    double x = newton_raphson<FuncPair>(0, 0.01, option);
+    std::cout << x << "\n";
 }
