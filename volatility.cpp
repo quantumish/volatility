@@ -2,9 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <random>
-#include <cassert>
+#include <iomanip>
 #include <cmath>
-#include "date.h"
 
 struct FuncPair {
     std::function<double(double)> f;
@@ -62,7 +61,6 @@ int rdn(int y, int m, int d) { /* Rata Die day one is 0001-01-01 */
     return 365*y + y/4 - y/100 + y/400 + (153*m - 457)/5 + d - 306;
 }
 
-using namespace date;
 int main(int argc, char** argv)
 {
     std::ifstream file (argv[1]);
@@ -73,22 +71,16 @@ int main(int argc, char** argv)
     std::string line;
     constants c = {0,0,0,0,0};
     while(getline(file, line)) {
-        std::tm e;
-        int m_0 = 3, d_0 = 3, y_0 = 2020;
-        int m,d,y;
-        sscanf(line.c_str(), "%lf %0d/%0d/%0d %lf", &(c.C), &d, &m, &y, &(c.K));
-        y+=2000;
-        //        std::cout << o.tm_mday << '/' << o.tm_mon << '/' << o.tm_year << " " << e.tm_mday << '/' << e.tm_mon << '/' << e.tm_year << " ";
+        sscanf(line.c_str(), "%lf %lf %lf", &(c.C), &(c.t), &(c.K));
         c.S = 58.29;
         c.r = 0.05;
-        auto d0 = year{y_0}/m_0/d_0;
-        auto d1 = year{y}/m/d;
-        c.t = (sys_days{d1} - sys_days{d0}).count();
         auto wrapper = [c] (double x) -> double {
             return black_scholes(x, c);
         };
         FuncPair option (wrapper, 0.001);
         double x = newton_raphson(strtod(argv[2], NULL), 0.001, option);
+        std::cout << std::fixed;
+        std::cout << std::setprecision(4);
         std::cout << c.S << " " << c.K << " " << c.r << " " << c.t << " " << c.C << "\t\t";
         std::cout << x << "\n";
     }
