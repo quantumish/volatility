@@ -10,7 +10,7 @@ struct FuncPair {
     std::function<double(double)> f;
     std::function<double(double)> f_prime;
 
-    FuncPair(std::function<double(double)> function, std::function<double(double)> derivative);            
+    FuncPair(std::function<double(double)> function, std::function<double(double)> derivative);
     FuncPair(std::function<double(double)> function, double eps);
 };
 
@@ -65,11 +65,11 @@ int main(int argc, char** argv)
         return 1;
     }
     std::string line;
-    constants c;
+    constants c = {0,0,0,0,0};
     while(getline(file, line)) {
         std::tm e;
         std::tm o = {0,0,0,3,31,120};
-        sscanf(line.c_str(), "%*s Equity,,%f,,UAL US %0d/%0d/%0d C%f",  &c.C, &e.tm_mday, &e.tm_mon, &e.tm_year, &c.K);        
+        sscanf(line.c_str(), "%lf %0d/%0d/%0d %lf", &(c.C), &(e.tm_mday), &(e.tm_mon), &(e.tm_year), &(c.K));
         e.tm_year+=100;
         std::time_t et = std::mktime(&e);
         std::time_t ot = std::mktime(&o);
@@ -77,11 +77,11 @@ int main(int argc, char** argv)
         c.r = 0.05;
         c.t = std::difftime(et, ot) / (60*60*24*365);
         std::cout << c.S << " " << c.K << " " << c.r << " " << c.t << " " << c.C << "\n";
-    }    
-    auto wrapper = [c] (double x) -> double {
-        return black_scholes(x, c);
-    };
-    FuncPair option (wrapper, 0.001);
-    double x = newton_raphson(2, 0.001, option);
-    std::cout << x << "\n";
+        auto wrapper = [c] (double x) -> double {
+            return black_scholes(x, c);
+        };
+        FuncPair option (wrapper, 0.001);
+        double x = newton_raphson(0.5, 0.001, option);
+        std::cout << x << "\n";
+    }
 }
