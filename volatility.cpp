@@ -70,6 +70,15 @@ int main(int argc, char** argv)
     }
     std::string line;
     constants c = {0,0,0,0,0};
+    int count = 0;
+    double sum = 0;
+    std::cout << std::fixed << std::setprecision(4);
+    std::cout << std::left << std::setw(10) << "S" << std::left << "\t"
+              << std::setw(10) << "K" << std::left << "\t"
+              << std::setw(10) << "r" << std::left << "\t"
+              << std::setw(10) << "t" << std::left << "\t"
+              << std::setw(10) << "C" << "\t\t"
+              << "σ" << "\n";
     while(getline(file, line)) {
         sscanf(line.c_str(), "%lf %lf %lf", &(c.C), &(c.t), &(c.K));
         c.S = 58.29;
@@ -79,9 +88,14 @@ int main(int argc, char** argv)
         };
         FuncPair option (wrapper, 0.001);
         double x = newton_raphson(strtod(argv[2], NULL), 0.001, option);
-        std::cout << std::fixed;
-        std::cout << std::setprecision(4);
-        std::cout << c.S << " " << c.K << " " << c.r << " " << c.t << " " << c.C << "\t\t";
+        std::cout << std::setw(10) << c.S << std::left << "\t"
+                  << std::setw(10) << c.K << std::left << "\t"
+                  << std::setw(10) << c.r << std::left << "\t"
+                  << std::setw(10) << c.t << std::left << "\t"
+                  << std::setw(10) << c.C << "\t\t";
         std::cout << x << "\n";
+        sum+=x;
+        count++;
     }
+    std::cout << "Mean σ: " << sum/count << "\n";
 }
