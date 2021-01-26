@@ -1,3 +1,5 @@
+# The C/C++ standard for dates is miserable. 
+# time_t conversion is the bane of my existence
 import datetime
 file = open("./cleanestcalls.csv", "r")
 lines = file.readlines()
